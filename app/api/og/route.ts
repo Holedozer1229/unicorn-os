@@ -1,47 +1,94 @@
-import { ImageResponse } from '@vercel/og';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
+import { TIERS } from '@/lib/tier';
+import { z } from 'zod';
+import { deriveIdeaGraph, runHolographicQAOA } from '@/lib/holographic';
+import { callSphinxOSStream } from '@/lib/sphinxos'; // Ensure this helper exists
 
-export const runtime = 'edge';   // Required for @vercel/og
+const ScoreRequestSchema = z.object({
+  idea: z.string().min(10).max(2000),
+  userId: z.string().optional().default('anon'),
+});
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  
-  // Extract any query parameters you need (e.g., score, idea, etc.)
-  const score = searchParams.get('score') || '0';
-  const idea = searchParams.get('idea') || 'Your Idea';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(to bottom, #000000, #1a0033)',
-          color: '#ffffff',
-          fontFamily: 'sans-serif',
-        }}
-      >
-        <div style={{ fontSize: 80, fontWeight: 'bold' }}>
-          Unicorn OS
-        </div>
-        <div style={{ fontSize: 48, marginTop: 20 }}>
-          Prediction
-        </div>
-        <div style={{ fontSize: 120, marginTop: 40 }}>
-          {score}
-        </div>
-        <div style={{ fontSize: 36, opacity: 0.8, marginTop: 20 }}>
-          {idea}
-        </div>
-      </div>
-    ),
-    {
-      width: 1200,
-      height: 630,
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { idea, userId = 'anon' } = ScoreRequestSchema.parse(body);
+
+    const tier = 'free'; // TODO: Replace with real user tier lookup from DB/auth
+    const tierConfig = TIERS[tier];
+
+    if (!tierConfig) {
+      return NextResponse.json({ error: 'Invalid tier configuration' }, { status: 500 });
     }
-  );
+
+    if (!rateLimit(userId, tierConfig.limit)) {
+      return NextResponse.json(
+        { error: 'Rate limit reached. Upgrade to Pro.', tier, limit: tierConfig.limit },
+        { status: 429 }
+      );
+    }
+
+    // Derive graph and run holographic QAOA + SphinxOS in parallel
+    const ideaGraph = deriveIdeaGraph(idea);
+    const [sphinxBody, holographicResult] = await Promise.all([
+      callSphinxOSStream(idea),
+      runHolographicQAOA(ideaGraph, { p: 4, lambdaHolo: 0.12 }),
+    ]);
+
+    const finalScore = holographicResult.optimalScore;
+
+    // Stream fused response
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const reader = sphinxBody.getReader();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+        } catch (e) {
+          console.error('SphinxOS stream error:', e);
+        }
+
+        const holoSummary = `\n\n🔬 UnicornOS Holographic QAOA Core:\n` +
+          `Optimized Score: ${finalScore}/100\n` +
+          `Holographic Penalty: ${holographicResult.holographicPenalty}\n` +
+          `Insight: ${holographicResult.insight}`;
+
+        controller.enqueue(encoder.encode(holoSummary));
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
+    }
+    console.error('UnicornOS Score Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+// Helper function (now properly placed after the POST handler)
+export function generateShareText(score: number): string {
+  return `I just tested my idea on Unicorn OS (powered by SphinxOS + Holographic QAOA).
+
+🔥 Optimized Viral Score: ${score}/100
+
+Think it will blow up? 👇
+https://unicorn-saas.vercel.app`;
 }
