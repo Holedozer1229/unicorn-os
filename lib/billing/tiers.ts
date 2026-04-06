@@ -1,16 +1,16 @@
-export const TIER_LIMITS = {
+export const TIERS = {
   free: {
+    name: "free",
     aiGenerationsPerMonth: 20,
-    stripePriceId: null,
   },
   pro: {
+    name: "pro",
     aiGenerationsPerMonth: 500,
     stripePriceId: process.env.STRIPE_PRICE_PRO!,
   },
   enterprise: {
+    name: "enterprise",
     aiGenerationsPerMonth: -1,
     stripePriceId: process.env.STRIPE_PRICE_ENTERPRISE!,
   },
-} as const
-
-export type SubscriptionTier = keyof typeof TIER_LIMITS
+}
