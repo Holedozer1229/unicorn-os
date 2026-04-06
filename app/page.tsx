@@ -123,6 +123,35 @@ export default function HomePage() {
           {/* Content */}
           <div className="relative z-10 container mx-auto px-4 text-center pt-24 pb-36">
 
+            
+            {/* ── HERO CINEMATIC LOGO EMBLEM ── */}
+            <div className="relative flex flex-col items-center mb-14" style={{ height: "280px" }}>
+
+              {/* Outer slow orbit ring */}
+              <div className="logo-orbit-b absolute rounded-full border border-[rgba(0,200,255,0.06)]" style={{ width:"340px", height:"340px", top:"-30px", left:"50%", transform:"translateX(-50%)" }} />
+
+              {/* Inner faster orbit ring with dots */}
+              <div className="logo-orbit-a absolute rounded-full border border-[rgba(0,200,255,0.12)]" style={{ width:"250px", height:"250px", top:"15px", left:"50%", transform:"translateX(-50%)" }}>
+                <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-[#00d4ff] shadow-[0_0_8px_#00d4ff]"/>
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-[#c084fc] shadow-[0_0_6px_#c084fc]"/>
+                <span className="absolute top-1/2 -left-1 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-[#fbbf24] shadow-[0_0_6px_#fbbf24]"/>
+              </div>
+
+              {/* Nebula halo behind logo */}
+              <div className="absolute rounded-full" style={{ width:"220px", height:"220px", top:"30px", left:"50%", transform:"translateX(-50%)", background:"radial-gradient(circle, rgba(124,58,237,0.25) 0%, rgba(0,212,255,0.12) 50%, transparent 70%)" }} />
+
+              {/* The 3D Logo */}
+              <div className="relative z-10" style={{ marginTop:"20px" }}>
+                <UnicornOSLogo size={165} iconOnly={true} />
+              </div>
+
+              {/* Brand name under the icon */}
+              <div className="relative z-10 mt-2 text-center" style={{ marginTop:"-10px" }}>
+                <span className="font-black tracking-[-0.04em]" style={{ fontSize:"clamp(2rem,5vw,3rem)", background:"linear-gradient(135deg,#a5f3fc 0%,#818cf8 45%,#c084fc 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>UnicornOS</span>
+                <div className="text-[10px] font-mono tracking-[0.28em] text-white/35 uppercase mt-1">THE INTELLIGENCE OPERATING SYSTEM</div>
+              </div>
+            </div>
+
             {/* Live badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[rgba(0,200,255,0.28)] bg-[rgba(0,200,255,0.07)] mb-10 text-xs font-mono tracking-[0.2em] text-[#00d4ff] uppercase">
               <span className="relative flex h-2 w-2">
