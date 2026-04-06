@@ -6,7 +6,6 @@ export const runtime = 'edge';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   
-  // Extract parameters (customize as needed for your UnicornOS OG images)
   const score = searchParams.get('score') || '0';
   const idea = searchParams.get('idea') || 'Your Startup Idea';
 
