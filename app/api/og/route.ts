@@ -16,31 +16,29 @@ export async function GET(req: Request) {
           height: "100%",
           background: "black",
           color: "white",
-          padding: 60,
-          fontSize: 40,
-          justifyContent: "center",
+          padding: 60
         }}
       >
-        <div style={{ color: "#22d3ee", fontSize: 28 }}>
-          Unicorn OS Prediction
+        <div style={{ fontSize: 28, color: "#22d3ee" }}>
+          Unicorn OS
         </div>
 
-        <div style={{ marginTop: 20, fontSize: 52, fontWeight: 700 }}>
+        <div style={{ fontSize: 64, fontWeight: 700, marginTop: 40 }}>
           {score}/100
         </div>
 
-        <div style={{ marginTop: 30, fontSize: 28, opacity: 0.7 }}>
+        <div style={{ fontSize: 28, opacity: 0.6, marginTop: 30 }}>
           {idea}
         </div>
 
-        <div style={{ marginTop: 60, fontSize: 22, opacity: 0.5 }}>
+        <div style={{ marginTop: "auto", opacity: 0.4 }}>
           unicorn-os.vercel.app
         </div>
       </div>
     ),
     {
       width: 1200,
-      height: 630,
+      height: 630
     }
   );
 }
