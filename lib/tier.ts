@@ -1,13 +1,13 @@
 export const TIERS = {
   free: {
     name: 'Free',
-    limit: 5,           // Daily/monthly idea scores
+    limit: 5,
     price: 0,
   },
   creator: {
     name: 'Creator',
     limit: 50,
-    price: 9,           // Example monthly price in USD
+    price: 9,
   },
   pro: {
     name: 'Pro',
