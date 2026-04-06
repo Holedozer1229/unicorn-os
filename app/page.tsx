@@ -1,213 +1,357 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import { ArrowRight, Check, Zap, Crown, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Lightbulb, Calendar, DollarSign, BarChart3, Check, Zap, Crown, ArrowRight, Play, Cpu, Radio, TrendingUp, Star } from "lucide-react"
 import UnicornOSLogo from "@/components/ui/UnicornOSLogo"
 
-export default function HomePage() {
+function TiltCard({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [s, setS] = useState<React.CSSProperties>({})
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden">
+    <div
+      ref={ref}
+      onMouseMove={(e) => {
+        const r = ref.current!.getBoundingClientRect()
+        const x = (e.clientX - r.left) / r.width - 0.5
+        const y = (e.clientY - r.top) / r.height - 0.5
+        setS({ transform: "perspective(800px) rotateY(" + (x * 12) + "deg) rotateX(" + (-y * 12) + "deg) scale3d(1.02,1.02,1.02)", transition: "transform 0.05s ease" })
+      }}
+      onMouseLeave={() => setS({ transform: "perspective(800px) rotateY(0deg) rotateX(0deg) scale3d(1,1,1)", transition: "transform 0.45s ease" })}
+      style={{ ...style, ...s }}
+      className={className}
+    >
+      {children}
+    </div>
+  )
+}
+function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
+  const [val, setVal] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    const obs = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      obs.disconnect()
+      let cur = 0
+      const step = to / 55
+      const t = setInterval(() => {
+        cur = Math.min(cur + step, to)
+        setVal(Math.floor(cur))
+        if (cur >= to) clearInterval(t)
+      }, 28)
+    }, { threshold: 0.4 })
+    if (ref.current) obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [to])
+  return <span ref={ref}>{val >= 1000 ? (val / 1000).toFixed(val >= 100000 ? 0 : 1) + "K" : val}{suffix}</span>
+}
+const WORDS = ["Creators", "Influencers", "Podcasters", "Brands", "Artists"]
+
+export default function HomePage() {
+  const [mouse, setMouse] = useState({ x: -999, y: -999 })
+  const [wordIdx, setWordIdx] = useState(0)
+  const [wordIn, setWordIn] = useState(true)
+
+  useEffect(() => {
+    const h = (e: MouseEvent) => setMouse({ x: e.clientX, y: e.clientY })
+    window.addEventListener("mousemove", h)
+    return () => window.removeEventListener("mousemove", h)
+  }, [])
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setWordIn(false)
+      setTimeout(() => { setWordIdx(i => (i + 1) % WORDS.length); setWordIn(true) }, 380)
+    }, 2800)
+    return () => clearInterval(t)
+  }, [])
+
+  return (
+    <div className="flex min-h-screen flex-col overflow-x-hidden" style={{ background: "#04040f" }}>
+
+      {/* Mouse spotlight */}
+      <div className="pointer-events-none fixed inset-0 z-30" style={{ background: "radial-gradient(700px circle at " + mouse.x + "px " + mouse.y + "px, rgba(0,212,255,0.06), transparent 42%)" }} />
 
       {/* HEADER */}
-      <header className="sticky top-0 z-50 border-b border-[rgba(0,200,255,0.12)] bg-[rgba(4,4,15,0.85)] backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-[rgba(0,200,255,0.1)] bg-[rgba(4,4,15,0.82)] backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/">
-            <UnicornOSLogo size={32} />
-          </Link>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-white/60">
-            <Link href="#features" className="hover:text-[#00d4ff] transition-colors">Features</Link>
-            <Link href="#stats" className="hover:text-[#00d4ff] transition-colors">Intelligence</Link>
-            <Link href="#pricing" className="hover:text-[#00d4ff] transition-colors">Pricing</Link>
+          <Link href="/"><UnicornOSLogo size={32} /></Link>
+          <nav className="hidden md:flex items-center gap-8 text-sm text-white/45">
+            {["Features", "Intelligence", "Pricing"].map(n => (
+              <Link key={n} href={"#" + n.toLowerCase()} className="hover:text-[#00d4ff] transition-colors tracking-wide font-mono text-xs uppercase">{n}</Link>
+            ))}
           </nav>
           <div className="flex items-center gap-3">
-            <Button asChild variant="ghost" className="text-white/70 hover:text-white hover:bg-white/5">
+            <Button asChild variant="ghost" className="text-white/55 hover:text-white hover:bg-white/5 text-sm">
               <Link href="/auth/login">Sign In</Link>
             </Button>
-            <Button asChild className="bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-bold rounded-full px-5 shadow-[0_0_20px_rgba(0,212,255,0.4)]">
+            <Button asChild className="bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-bold rounded-full px-5 text-sm shadow-[0_0_20px_rgba(0,212,255,0.4)] hover:shadow-[0_0_35px_rgba(0,212,255,0.6)] transition-all">
               <Link href="/auth/sign-up">Get Started</Link>
             </Button>
           </div>
         </div>
       </header>
-
       <main className="flex-1">
 
-        {/* HERO */}
-        <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden circuit-grid starfield">
+        {/* ── HERO ── */}
+        <section className="particle-field relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+
+          {/* Scan line */}
+          <div className="scan-line" aria-hidden="true" />
+
+          {/* Particles */}
+          {Array.from({ length: 32 }).map((_, i) => (
+            <div key={i} className="particle" style={{ left: ((i * 37 + 11) % 100) + "%", animationDelay: (i * 0.38) + "s", animationDuration: (8 + (i % 7)) + "s" }} />
+          ))}
+
+          {/* Nebula blobs */}
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -top-32 left-1/4 w-[600px] h-[600px] rounded-full bg-[#00d4ff]/8 blur-[120px]" />
-            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-[#8b5cf6]/8 blur-[100px]" />
-            <div className="absolute top-1/3 left-1/2 w-[300px] h-[300px] rounded-full bg-[#fbbf24]/5 blur-[80px] -translate-x-1/2" />
+            <div className="absolute -top-40 left-1/4 w-[750px] h-[600px] rounded-full bg-[#00d4ff]/7 blur-[140px]" />
+            <div className="absolute bottom-0 right-1/4 w-[650px] h-[500px] rounded-full bg-[#8b5cf6]/7 blur-[130px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] rounded-full bg-[#fbbf24]/4 blur-[100px]" />
           </div>
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="w-[700px] h-[300px] rounded-full border border-[rgba(0,200,255,0.08)]" style={{transform:"rotateX(70deg)",boxShadow:"0 0 80px rgba(0,200,255,0.06) inset"}} />
+
+          {/* Circuit grid */}
+          <div className="circuit-grid pointer-events-none absolute inset-0 opacity-25" />
+
+          {/* Galaxy ring */}
+          <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-0">
+            <div className="w-[900px] h-[350px] rounded-full border border-[rgba(0,200,255,0.06)]" style={{ transform: "rotateX(72deg)", boxShadow: "0 0 100px rgba(0,200,255,0.04) inset" }} />
           </div>
-          <div className="relative z-10 container mx-auto px-4 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[rgba(0,200,255,0.25)] bg-[rgba(0,200,255,0.06)] mb-8 text-xs font-mono tracking-widest text-[#00d4ff] uppercase">
+
+          {/* Content */}
+          <div className="relative z-10 container mx-auto px-4 text-center pt-24 pb-36">
+
+            {/* Live badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[rgba(0,200,255,0.28)] bg-[rgba(0,200,255,0.07)] mb-10 text-xs font-mono tracking-[0.2em] text-[#00d4ff] uppercase">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00d4ff] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00d4ff]" />
               </span>
-              AI Intelligence Operating System — Live
+              Intelligence OS — Live
             </div>
-            <h1 className="mx-auto mb-6 max-w-5xl text-5xl font-black tracking-tight md:text-7xl lg:text-8xl leading-none">
-              <span className="text-white">The Operating System</span>
-              <br />
-              <span className="text-gradient">for Modern Creators</span>
+
+            {/* Headline */}
+            <h1 className="mx-auto mb-4 max-w-5xl font-black tracking-tight leading-[1.04]" style={{ fontSize: "clamp(2.8rem,8vw,6.5rem)" }}>
+              <span className="text-white block">The OS Powering</span>
+              <span
+                className="text-gradient block"
+                style={{ minWidth: "8ch", display: "block", opacity: wordIn ? 1 : 0, transform: wordIn ? "translateY(0)" : "translateY(12px)", transition: "opacity 0.38s ease, transform 0.38s ease" }}
+              >
+                {WORDS[wordIdx]}
+              </span>
             </h1>
-            <p className="mx-auto mb-10 max-w-2xl text-lg text-white/55 md:text-xl leading-relaxed">
-              Generate content ideas, plan your calendar, discover monetization strategies, and track your growth — all powered by AI.
+
+            <p className="mx-auto mb-12 max-w-lg text-white/45 leading-relaxed" style={{ fontSize: "clamp(1rem,2vw,1.2rem)" }}>
+              AI-powered content, scheduling, monetization and analytics — one unified operating system for your creator career.
             </p>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mb-16">
-              <Button asChild size="lg" className="bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-bold text-base rounded-full px-8 h-12 shadow-[0_0_30px_rgba(0,212,255,0.45)] hover:shadow-[0_0_45px_rgba(0,212,255,0.6)] transition-all">
-                <Link href="/auth/sign-up">Start for Free <ArrowRight className="ml-2 h-4 w-4" /></Link>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+              <Button asChild size="lg" className="group bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-black text-base rounded-full px-10 h-14 shadow-[0_0_40px_rgba(0,212,255,0.5)] hover:shadow-[0_0_65px_rgba(0,212,255,0.75)] transition-all hover:scale-105">
+                <Link href="/auth/sign-up">Launch Your OS <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" /></Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-[rgba(0,200,255,0.25)] text-white/80 hover:border-[#00d4ff] hover:text-[#00d4ff] hover:bg-[rgba(0,200,255,0.05)] rounded-full px-8 h-12 transition-all">
-                <Link href="#features"><Play className="mr-2 h-4 w-4" /> See How It Works</Link>
+              <Button asChild variant="ghost" size="lg" className="text-white/55 hover:text-white rounded-full px-8 h-14 border border-white/10 hover:border-[rgba(0,200,255,0.3)] hover:bg-[rgba(0,200,255,0.04)] transition-all">
+                <Link href="#features"><Play className="mr-2 h-4 w-4 fill-current" /> See How It Works</Link>
               </Button>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-6">
+
+            {/* Live HUD metrics */}
+            <div className="flex flex-wrap justify-center gap-4">
               {[
-                { label: "USAGE", value: "0.91", color: "#fbbf24" },
-                { label: "ERGOTROPY", value: "18.2", color: "#00d4ff" },
-                { label: "AI JOBS RUNNING", value: "42", color: "#a78bfa" },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="cosmic-card px-5 py-3 rounded-xl flex items-center gap-3" style={{ borderColor: color + "33" }}>
-                  <span className="text-2xl font-black font-mono" style={{ color }}>{value}</span>
-                  <span className="text-xs font-mono tracking-widest text-white/40 uppercase">{label}</span>
+                { v: "0.91", l: "USAGE SCORE",     c: "#fbbf24" },
+                { v: "18.2", l: "ERGOTROPY INDEX",  c: "#00d4ff" },
+                { v: "42",   l: "AI JOBS LIVE",    c: "#a78bfa" },
+                { v: "99.9%",l: "UPTIME",          c: "#34d399" },
+              ].map(({ v, l, c }) => (
+                <div key={l} className="hud-card flex items-center gap-3 px-5 py-3 rounded-2xl">
+                  <span className="text-xl font-black font-mono" style={{ color: c }}>{v}</span>
+                  <span className="text-[10px] font-mono tracking-[0.15em] text-white/35 uppercase">{l}</span>
                 </div>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* WORKFLOW STATS BAR */}
-        <section id="stats" className="border-y border-[rgba(0,200,255,0.1)] bg-[rgba(0,200,255,0.02)] py-8">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-              {[
-                { icon: Cpu, label: "AUTOMATED EDITING", desc: "AI handles your post-production workflow" },
-                { icon: Radio, label: "AI JOBS RUNNING · 42", desc: "Real-time intelligence processing 24/7" },
-                { icon: TrendingUp, label: "CONTENT OPTIMIZATION", desc: "Every piece tuned for maximum reach" },
-              ].map(({ icon: Icon, label, desc }) => (
-                <div key={label} className="flex items-center justify-center gap-4 group">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,200,255,0.08)] border border-[rgba(0,200,255,0.15)] group-hover:border-[#00d4ff] group-hover:shadow-[0_0_20px_rgba(0,212,255,0.25)] transition-all">
-                    <Icon className="h-5 w-5 text-[#00d4ff]" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs font-mono font-bold tracking-widest text-[#00d4ff] uppercase">{label}</div>
-                    <div className="text-xs text-white/40 mt-0.5">{desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {/* Scroll cue */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/25 animate-bounce">
+            <div className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent" />
+            <span className="text-[10px] font-mono tracking-[0.3em] uppercase">Scroll</span>
           </div>
         </section>
+        {/* ── MARQUEE ── */}
+        <div className="border-y border-[rgba(0,200,255,0.09)] bg-[rgba(0,200,255,0.02)] py-4 overflow-hidden">
+          <div className="marquee-track gap-10">
+            {["Content Creators","YouTubers","Podcasters","TikTokers","Instagrammers","Twitch Streamers","Newsletter Writers","Course Creators","Brand Builders","Freelancers","Agencies","Music Artists","Content Creators","YouTubers","Podcasters","TikTokers","Instagrammers","Twitch Streamers","Newsletter Writers","Course Creators","Brand Builders","Freelancers","Agencies","Music Artists"].map((t, i) => (
+              <span key={i} className="shrink-0 flex items-center gap-4 text-xs font-mono tracking-widest text-white/30 uppercase whitespace-nowrap">
+                <span className="text-[#00d4ff]/35 text-[8px]">&#9670;</span> {t}
+              </span>
+            ))}
+          </div>
+        </div>
 
-        {/* FEATURES */}
-        <section id="features" className="py-24 relative">
+        {/* ── FEATURES ── */}
+        <section id="features" className="py-28 relative">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute top-1/2 left-0 w-px h-40 bg-gradient-to-b from-transparent via-[rgba(0,200,255,0.2)] to-transparent" />
+            <div className="absolute top-1/2 right-0 w-px h-40 bg-gradient-to-b from-transparent via-[rgba(0,200,255,0.2)] to-transparent" />
+          </div>
           <div className="container mx-auto px-4">
-            <div className="mb-16 text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[rgba(0,200,255,0.2)] bg-[rgba(0,200,255,0.05)] mb-4 text-xs font-mono tracking-widest text-[#00d4ff] uppercase">
-                <Star className="h-3 w-3" /> Core Modules
-              </div>
-              <h2 className="mb-4 text-3xl font-black tracking-tight md:text-5xl text-white">
-                Everything You Need to <span className="text-gradient">Grow</span>
+            <div className="mb-20 text-center">
+              <p className="text-[11px] font-mono tracking-[0.35em] text-[#00d4ff] uppercase mb-5">Core Modules</p>
+              <h2 className="font-black tracking-tight text-white mb-5" style={{ fontSize: "clamp(2rem,5vw,3.5rem)" }}>
+                Built for the <span className="text-gradient">Creator Economy</span>
               </h2>
-              <p className="mx-auto max-w-2xl text-white/50">UnicornOS combines AI-powered tools with intuitive design to help you focus on what matters most — creating.</p>
+              <p className="max-w-lg mx-auto text-white/40 leading-relaxed">Every tool you need, unified under one intelligence operating system.</p>
             </div>
+
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {[
-                { icon: Lightbulb, title: "Content Engine", desc: "Generate endless content ideas tailored to your niche, audience, and preferred platforms using AI.", color: "#00d4ff", bg: "rgba(0,200,255,0.08)" },
-                { icon: Calendar, title: "Smart Planner", desc: "Plan and schedule your content across multiple platforms with an intuitive calendar interface.", color: "#34d399", bg: "rgba(52,211,153,0.08)" },
-                { icon: DollarSign, title: "Monetization AI", desc: "Get personalized monetization strategies based on your audience size, niche, and platforms.", color: "#fbbf24", bg: "rgba(251,191,36,0.08)" },
-                { icon: BarChart3, title: "Growth Analytics", desc: "Track your content performance, AI usage, and implemented strategies with detailed analytics.", color: "#a78bfa", bg: "rgba(167,139,250,0.08)" },
-              ].map(({ icon: Icon, title, desc, color, bg }) => (
-                <div key={title} className="cosmic-card rounded-2xl p-6 group hover:scale-[1.02] transition-all duration-300" style={{ borderColor: color + "22" }}>
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-300 group-hover:scale-110" style={{ background: bg, borderColor: color + "40" }}>
-                    <Icon className="h-5 w-5" style={{ color }} />
+                { icon: "&#9889;", title: "Content Engine",   tag: "GENERATE", desc: "Infinite ideas on demand, tailored to your niche. Never run dry.",                 c: "#00d4ff", stat: "10K ideas/mo" },
+                { icon: "&#128197;", title: "Smart Planner",    tag: "SCHEDULE", desc: "Your calendar, fully automated. AI schedules at peak engagement times.",      c: "#34d399", stat: "50+ platforms" },
+                { icon: "&#128176;", title: "Monetization AI",  tag: "REVENUE",  desc: "Turn audience into income. AI finds your best revenue paths instantly.",    c: "#fbbf24", stat: "$18M generated" },
+                { icon: "&#128202;", title: "Growth Analytics", tag: "ANALYZE",  desc: "See what is working in real-time. Data-driven decisions, every post.",     c: "#a78bfa", stat: "99% accuracy" },
+              ].map(({ icon, title, tag, desc, c, stat }) => (
+                <TiltCard key={title}
+                  style={{ borderColor: c + "22" }}
+                  className="cosmic-card rounded-2xl p-6 cursor-default group"
+                >
+                  <div className="mb-5 flex items-start justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl text-2xl" style={{ background: c + "14", border: "1px solid " + c + "30" }} dangerouslySetInnerHTML={{ __html: icon }} />
+                    <span className="text-[10px] font-mono tracking-widest px-2.5 py-1 rounded-full" style={{ color: c, background: c + "14", border: "1px solid " + c + "28" }}>{tag}</span>
                   </div>
-                  <h3 className="mb-2 text-base font-bold text-white">{title}</h3>
-                  <p className="text-sm text-white/45 leading-relaxed">{desc}</p>
+                  <h3 className="text-base font-bold text-white mb-2">{title}</h3>
+                  <p className="text-sm text-white/40 leading-relaxed mb-6">{desc}</p>
+                  <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-white/20 uppercase tracking-wider">Live Stat</span>
+                    <span className="text-xs font-mono font-bold" style={{ color: c }}>{stat}</span>
+                  </div>
+                </TiltCard>
+              ))}
+            </div>
+          </div>
+        </section>
+        {/* ── STATS ── */}
+        <section id="intelligence" className="relative py-24 overflow-hidden" style={{ background: "rgba(0,200,255,0.02)", borderTop: "1px solid rgba(0,200,255,0.08)", borderBottom: "1px solid rgba(0,200,255,0.08)" }}>
+          <div className="circuit-grid pointer-events-none absolute inset-0 opacity-15" />
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+              {[
+                { to: 42000,   suf: "+",  label: "Active Creators"    },
+                { to: 2400000, suf: "+",  label: "Posts Scheduled"    },
+                { to: 18,      suf: "M+", label: "Revenue Generated"  },
+                { to: 99,      suf: ".9%",label: "Platform Uptime"    },
+              ].map(({ to, suf, label }) => (
+                <div key={label}>
+                  <div className="text-4xl md:text-5xl font-black text-white mb-2 font-mono">
+                    <Counter to={to} suffix={suf} />
+                  </div>
+                  <div className="text-xs text-white/35 tracking-widest uppercase font-mono">{label}</div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* PRICING */}
-        <section id="pricing" className="py-24 relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 circuit-grid opacity-40" />
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="mb-16 text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[rgba(251,191,36,0.25)] bg-[rgba(251,191,36,0.06)] mb-4 text-xs font-mono tracking-widest text-[#fbbf24] uppercase">
-                <Crown className="h-3 w-3" /> Simple Pricing
-              </div>
-              <h2 className="mb-4 text-3xl font-black tracking-tight md:text-5xl text-white">
-                Start Free, Scale <span className="text-gradient">Infinitely</span>
+        {/* ── PRICING ── */}
+        <section id="pricing" className="py-28 relative">
+          <div className="container mx-auto px-4">
+            <div className="mb-20 text-center">
+              <p className="text-[11px] font-mono tracking-[0.35em] text-[#fbbf24] uppercase mb-5">Pricing</p>
+              <h2 className="font-black tracking-tight text-white" style={{ fontSize: "clamp(2rem,5vw,3.5rem)" }}>
+                Start Free. <span className="text-gradient">Scale Fast.</span>
               </h2>
-              <p className="mx-auto max-w-2xl text-white/50">No hidden fees. No surprises. Cancel anytime.</p>
             </div>
-            <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
-              <div className="cosmic-card rounded-2xl p-7">
-                <div className="mb-6"><h3 className="text-lg font-bold text-white">Free</h3><p className="text-sm text-white/40 mt-1">Perfect to get started</p></div>
-                <div className="mb-6"><span className="text-4xl font-black text-white">$0</span><span className="text-white/40 ml-1">/month</span></div>
-                <ul className="space-y-3 text-sm mb-8">{["10 AI generations/month","25 saved ideas","5 scheduled posts","7-day analytics"].map(f=>(<li key={f} className="flex items-center gap-2 text-white/60"><Check className="h-4 w-4 text-[#34d399] shrink-0" />{f}</li>))}</ul>
-                <Button asChild variant="outline" className="w-full border-[rgba(0,200,255,0.2)] text-white/70 hover:border-[#00d4ff] hover:text-[#00d4ff] hover:bg-[rgba(0,200,255,0.05)] rounded-xl transition-all">
-                  <Link href="/auth/sign-up">Get Started</Link>
+            <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3 items-start">
+
+              <TiltCard className="cosmic-card rounded-2xl p-8">
+                <p className="text-[10px] font-mono tracking-widest text-white/30 uppercase mb-1">Starter</p>
+                <h3 className="text-xl font-bold text-white mb-6">Free</h3>
+                <div className="mb-7 font-mono"><span className="text-5xl font-black text-white">$0</span><span className="text-white/25 ml-1 text-sm">/mo</span></div>
+                <ul className="space-y-3.5 text-sm mb-8">
+                  {["10 AI generations/mo","25 saved ideas","5 scheduled posts","7-day analytics"].map(f=>(
+                    <li key={f} className="flex items-center gap-2.5 text-white/50"><Check className="h-4 w-4 text-[#34d399] shrink-0" />{f}</li>
+                  ))}
+                </ul>
+                <Button asChild variant="outline" className="w-full border-white/10 text-white/50 hover:border-[#00d4ff]/40 hover:text-[#00d4ff] rounded-xl transition-all h-11">
+                  <Link href="/auth/sign-up">Get Started Free</Link>
                 </Button>
-              </div>
-              <div className="cosmic-card rounded-2xl p-7 relative" style={{ borderColor: "rgba(0,200,255,0.3)", boxShadow: "0 0 40px rgba(0,200,255,0.12),inset 0 0 40px rgba(0,200,255,0.03)" }}>
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-[#00d4ff] text-[#04040f] shadow-[0_0_15px_rgba(0,212,255,0.5)]">
-                    <Zap className="h-3 w-3" /> POPULAR
+              </TiltCard>
+
+              <TiltCard className="rounded-2xl p-8 relative" style={{ background: "linear-gradient(145deg,rgba(0,212,255,0.07),rgba(0,200,255,0.02))", border: "1px solid rgba(0,200,255,0.35)", boxShadow: "0 0 60px rgba(0,212,255,0.12),inset 0 0 40px rgba(0,212,255,0.03)" }}>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black bg-[#00d4ff] text-[#04040f] shadow-[0_0_25px_rgba(0,212,255,0.65)]">
+                    <Zap className="h-3 w-3 fill-current" /> MOST POPULAR
                   </span>
                 </div>
-                <div className="mb-6"><h3 className="text-lg font-bold text-[#00d4ff]">Creator</h3><p className="text-sm text-white/40 mt-1">For growing creators</p></div>
-                <div className="mb-6"><span className="text-4xl font-black text-white">$19</span><span className="text-white/40 ml-1">/month</span></div>
-                <ul className="space-y-3 text-sm mb-8">{["100 AI generations/month","250 saved ideas","50 scheduled posts","30-day analytics","Monetization AI"].map(f=>(<li key={f} className="flex items-center gap-2 text-white/60"><Check className="h-4 w-4 text-[#00d4ff] shrink-0" />{f}</li>))}</ul>
-                <Button asChild className="w-full bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-bold rounded-xl shadow-[0_0_20px_rgba(0,212,255,0.35)] transition-all">
-                  <Link href="/auth/sign-up">Start Creator Plan</Link>
+                <p className="text-[10px] font-mono tracking-widest text-[#00d4ff] uppercase mb-1">Creator</p>
+                <h3 className="text-xl font-bold text-white mb-6">Creator</h3>
+                <div className="mb-7 font-mono"><span className="text-5xl font-black text-white">$19</span><span className="text-white/25 ml-1 text-sm">/mo</span></div>
+                <ul className="space-y-3.5 text-sm mb-8">
+                  {["100 AI generations/mo","250 saved ideas","50 scheduled posts","30-day analytics","Monetization AI"].map(f=>(
+                    <li key={f} className="flex items-center gap-2.5 text-white/60"><Check className="h-4 w-4 text-[#00d4ff] shrink-0" />{f}</li>
+                  ))}
+                </ul>
+                <Button asChild className="w-full bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-black rounded-xl h-11 shadow-[0_0_25px_rgba(0,212,255,0.45)] hover:shadow-[0_0_45px_rgba(0,212,255,0.65)] transition-all">
+                  <Link href="/auth/sign-up">Start Creating</Link>
                 </Button>
-              </div>
-              <div className="cosmic-card rounded-2xl p-7" style={{ borderColor: "rgba(251,191,36,0.2)" }}>
-                <div className="mb-6"><h3 className="text-lg font-bold text-[#fbbf24] flex items-center gap-2"><Crown className="h-4 w-4" /> Pro</h3><p className="text-sm text-white/40 mt-1">For professional creators</p></div>
-                <div className="mb-6"><span className="text-4xl font-black text-white">$49</span><span className="text-white/40 ml-1">/month</span></div>
-                <ul className="space-y-3 text-sm mb-8">{["Unlimited AI generations","Unlimited ideas & posts","1-year analytics history","Advanced monetization AI","Priority support"].map(f=>(<li key={f} className="flex items-center gap-2 text-white/60"><Check className="h-4 w-4 text-[#fbbf24] shrink-0" />{f}</li>))}</ul>
-                <Button asChild variant="outline" className="w-full border-[rgba(251,191,36,0.3)] text-[#fbbf24] hover:bg-[rgba(251,191,36,0.08)] hover:border-[#fbbf24] rounded-xl transition-all">
-                  <Link href="/auth/sign-up">Start Pro Plan</Link>
+              </TiltCard>
+
+              <TiltCard className="cosmic-card rounded-2xl p-8" style={{ borderColor: "rgba(251,191,36,0.2)" }}>
+                <p className="text-[10px] font-mono tracking-widest text-[#fbbf24] uppercase mb-1">Professional</p>
+                <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Crown className="h-4 w-4 text-[#fbbf24]" /> Pro</h3>
+                <div className="mb-7 font-mono"><span className="text-5xl font-black text-white">$49</span><span className="text-white/25 ml-1 text-sm">/mo</span></div>
+                <ul className="space-y-3.5 text-sm mb-8">
+                  {["Unlimited AI generations","Unlimited ideas and posts","1-year analytics history","Advanced monetization AI","Priority support"].map(f=>(
+                    <li key={f} className="flex items-center gap-2.5 text-white/60"><Check className="h-4 w-4 text-[#fbbf24] shrink-0" />{f}</li>
+                  ))}
+                </ul>
+                <Button asChild variant="outline" className="w-full border-[rgba(251,191,36,0.3)] text-[#fbbf24] hover:bg-[rgba(251,191,36,0.08)] hover:border-[#fbbf24] rounded-xl h-11 transition-all">
+                  <Link href="/auth/sign-up">Go Pro</Link>
                 </Button>
-              </div>
+              </TiltCard>
+
             </div>
           </div>
         </section>
-
-        {/* CTA */}
-        <section className="relative py-24 overflow-hidden">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[rgba(0,200,255,0.04)] to-transparent" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[rgba(0,200,255,0.08)]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-[rgba(0,200,255,0.06)]" />
+        {/* ── CTA ── */}
+        <section className="relative py-36 overflow-hidden">
+          {/* Orbiting rings */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="orbit-ring w-[900px] h-[900px] rounded-full border border-[rgba(0,200,255,0.04)]" />
+            <div className="orbit-ring w-[680px] h-[680px] rounded-full border border-[rgba(0,200,255,0.06)]" style={{ animationDirection: "reverse", animationDuration: "28s" }} />
+            <div className="orbit-ring w-[460px] h-[460px] rounded-full border border-[rgba(0,200,255,0.09)]" style={{ animationDuration: "18s" }} />
+            <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 50% 50%, rgba(0,212,255,0.04) 0%, transparent 60%)" }} />
           </div>
-          <div className="container mx-auto px-4 text-center relative z-10">
-            <h2 className="mb-4 text-3xl font-black tracking-tight md:text-5xl text-white">
-              Ready to <span className="text-gradient">Level Up</span> Your Content?
+          <div className="relative z-10 container mx-auto px-4 text-center">
+            <p className="text-[11px] font-mono tracking-[0.35em] text-[#00d4ff] uppercase mb-6">Join the Revolution</p>
+            <h2 className="font-black tracking-tight text-white mb-6" style={{ fontSize: "clamp(2.5rem,6.5vw,5rem)" }}>
+              Your Audience is<br />
+              <span className="text-gradient">Waiting for You</span>
             </h2>
-            <p className="mx-auto mb-10 max-w-2xl text-white/50">Join thousands of creators using UnicornOS to generate better content, grow their audience, and monetize their passion.</p>
-            <Button asChild size="lg" className="bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-bold text-base rounded-full px-10 h-14 shadow-[0_0_40px_rgba(0,212,255,0.5)] hover:shadow-[0_0_60px_rgba(0,212,255,0.7)] transition-all">
-              <Link href="/auth/sign-up">Start Creating for Free <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <p className="mx-auto mb-14 max-w-md text-white/40 leading-relaxed text-lg">
+              42,000+ creators are already using UnicornOS to grow faster. Join them today.
+            </p>
+            <Button asChild size="lg" className="group bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-black text-lg rounded-full px-14 h-16 shadow-[0_0_55px_rgba(0,212,255,0.55)] hover:shadow-[0_0_90px_rgba(0,212,255,0.78)] transition-all hover:scale-105">
+              <Link href="/auth/sign-up">
+                Start for Free
+                <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </Button>
+            <p className="mt-8 text-[11px] text-white/20 font-mono tracking-widest uppercase">No credit card required &middot; Cancel anytime &middot; Instant access</p>
           </div>
         </section>
+
       </main>
 
-      {/* FOOTER */}
-      <footer className="border-t border-[rgba(0,200,255,0.1)] py-8 bg-[rgba(4,4,15,0.8)]">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 text-center md:flex-row md:text-left">
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-[rgba(0,200,255,0.08)] py-8" style={{ background: "rgba(4,4,15,0.95)" }}>
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 md:flex-row">
           <UnicornOSLogo size={28} />
-          <p className="text-sm text-white/30 font-mono">Built for creators, by creators. © 2025 UnicornOS</p>
-          <div className="flex items-center gap-1 text-xs text-white/20 font-mono">
-            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[#00d4ff] animate-pulse" />
-            SYSTEMS OPERATIONAL
+          <p className="text-xs text-white/20 font-mono">Built for creators, by creators. &copy; 2025 UnicornOS</p>
+          <div className="flex items-center gap-1.5 text-xs text-white/20 font-mono">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#00d4ff] animate-pulse inline-block" />
+            ALL SYSTEMS NOMINAL
           </div>
         </div>
       </footer>

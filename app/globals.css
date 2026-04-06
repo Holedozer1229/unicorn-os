@@ -133,3 +133,25 @@
     border:2px solid hsl(var(--primary)); animation:pulse-ring 2s ease-out infinite;
   }
 }
+/* ── Cinematic animations ─── */
+
+.particle-field{position:relative;overflow:hidden;}
+.particle{position:absolute;width:2px;height:2px;border-radius:50%;background:rgba(0,200,255,0.5);bottom:-4px;animation:float-particle linear infinite;}
+.particle:nth-child(3n+1){background:rgba(167,139,250,0.5);width:1.5px;height:1.5px;}
+.particle:nth-child(5n+1){background:rgba(251,191,36,0.35);}
+@keyframes float-particle{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:0.8}90%{opacity:0.3}100%{transform:translateY(-105vh) translateX(15px);opacity:0}}
+
+.scan-line{position:absolute;height:1px;left:0;right:0;top:0;background:linear-gradient(90deg,transparent,rgba(0,200,255,0.5),rgba(0,200,255,0.15),transparent);animation:scan-sweep 12s linear infinite;}
+@keyframes scan-sweep{0%{top:0;opacity:0}5%{opacity:1}90%{opacity:0.2}100%{top:100%;opacity:0}}
+
+.hud-card{background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.15);backdrop-filter:blur(10px);transition:all 0.3s ease;}
+.hud-card:hover{border-color:rgba(0,200,255,0.4);box-shadow:0 0 20px rgba(0,212,255,0.15);}
+
+.marquee-track{animation:marquee-scroll 35s linear infinite;width:max-content;display:flex;}
+@keyframes marquee-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.orbit-ring{position:absolute;animation:orbit-spin 20s linear infinite;}
+@keyframes orbit-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
