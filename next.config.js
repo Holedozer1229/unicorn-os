@@ -1,16 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
 
-  // Ensures Vercel properly detects App Router
-  experimental: {
-    serverComponentsExternalPackages: [],
-  },
+  // ✅ Required for some server-side packages (Stripe, Redis, etc.)
+  serverExternalPackages: [],
 
-  // Prevents accidental static export issues
-  output: undefined,
+  // ✅ Enable gzip compression
+  compress: true,
 
+  // ✅ Remove x-powered-by header (security best practice)
+  poweredByHeader: false,
+
+  // ✅ Image optimization config
   images: {
     remotePatterns: [
       {
@@ -18,6 +19,15 @@ const nextConfig = {
         hostname: "**",
       },
     ],
+  },
+
+  // ✅ Enforce strict builds (fail fast in production)
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+
+  typescript: {
+    ignoreBuildErrors: false,
   },
 }
 
