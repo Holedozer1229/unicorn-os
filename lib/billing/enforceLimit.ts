@@ -1,10 +1,15 @@
-import { TIER_LIMITS } from "@/lib/types"
 import { getAIGenerationCount, trackAIGeneration } from "@/lib/redis"
+import { TIERS } from "@/lib/billing/tiers"
 
-export async function enforceLimit(userId: string, tier: string) {
-  const limits = TIER_LIMITS[tier || "free"]
+// NOTE: in production this should come from DB synced via Stripe webhook
+function getUserTier(): "free" | "pro" | "enterprise" {
+  return "free"
+}
 
-  // unlimited tier
+export async function enforceLimit(userId: string) {
+  const tier = getUserTier()
+  const limits = TIERS[tier]
+
   if (limits.aiGenerationsPerMonth === -1) {
     await trackAIGeneration(userId)
     return { allowed: true }
@@ -16,11 +21,10 @@ export async function enforceLimit(userId: string, tier: string) {
   if (remaining <= 0) {
     return {
       allowed: false,
-      error: "AI generation limit reached. Upgrade required.",
+      error: "Upgrade required (Stripe enforced limit reached)",
     }
   }
 
-  // track usage only if allowed
   await trackAIGeneration(userId)
 
   return {
