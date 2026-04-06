@@ -46,7 +46,7 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   }, [to])
   return <span ref={ref}>{val >= 1000 ? (val / 1000).toFixed(val >= 100000 ? 0 : 1) + "K" : val}{suffix}</span>
 }
-const WORDS = ["Creators", "Influencers", "Podcasters", "Brands", "Artists"]
+const WORDS = ["Creators", "Models", "Influencers", "Artists", "Podcasters"]
 
 export default function HomePage() {
   const [mouse, setMouse] = useState({ x: -999, y: -999 })
@@ -125,24 +125,24 @@ export default function HomePage() {
 
             
             {/* ── HERO CINEMATIC LOGO EMBLEM ── */}
-            <div className="relative flex flex-col items-center mb-14" style={{ height: "280px" }}>
+            <div className="relative flex flex-col items-center mb-14" style={{ height: "210px" }}>
 
               {/* Outer slow orbit ring */}
-              <div className="logo-orbit-b absolute rounded-full border border-[rgba(0,200,255,0.06)]" style={{ width:"340px", height:"340px", top:"-30px", left:"50%", transform:"translateX(-50%)" }} />
+              <div className="logo-orbit-b absolute rounded-full border border-[rgba(0,200,255,0.06)]" style={{ width:"270px", height:"270px", top:"-20px", left:"50%", transform:"translateX(-50%)" }} />
 
               {/* Inner faster orbit ring with dots */}
-              <div className="logo-orbit-a absolute rounded-full border border-[rgba(0,200,255,0.12)]" style={{ width:"250px", height:"250px", top:"15px", left:"50%", transform:"translateX(-50%)" }}>
+              <div className="logo-orbit-a absolute rounded-full border border-[rgba(0,200,255,0.12)]" style={{ width:"195px", height:"195px", top:"10px", left:"50%", transform:"translateX(-50%)" }}>
                 <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-[#00d4ff] shadow-[0_0_8px_#00d4ff]"/>
                 <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-[#c084fc] shadow-[0_0_6px_#c084fc]"/>
                 <span className="absolute top-1/2 -left-1 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-[#fbbf24] shadow-[0_0_6px_#fbbf24]"/>
               </div>
 
               {/* Nebula halo behind logo */}
-              <div className="absolute rounded-full" style={{ width:"220px", height:"220px", top:"30px", left:"50%", transform:"translateX(-50%)", background:"radial-gradient(circle, rgba(124,58,237,0.25) 0%, rgba(0,212,255,0.12) 50%, transparent 70%)" }} />
+              <div className="absolute rounded-full" style={{ width:"175px", height:"175px", top:"18px", left:"50%", transform:"translateX(-50%)", background:"radial-gradient(circle, rgba(124,58,237,0.25) 0%, rgba(0,212,255,0.12) 50%, transparent 70%)" }} />
 
               {/* The 3D Logo */}
-              <div className="relative z-10" style={{ marginTop:"20px" }}>
-                <UnicornOSLogo size={165} iconOnly={true} />
+              <div className="relative z-10" style={{ marginTop:"14px" }}>
+                <UnicornOSLogo size={110} iconOnly={true} />
               </div>
 
               {/* Brand name under the icon */}
@@ -173,7 +173,7 @@ export default function HomePage() {
             </h1>
 
             <p className="mx-auto mb-12 max-w-lg text-white/45 leading-relaxed" style={{ fontSize: "clamp(1rem,2vw,1.2rem)" }}>
-              AI-powered content, scheduling, monetization and analytics — one unified operating system for your creator career.
+              Whether you create on YouTube, OnlyFans, TikTok, Instagram, or any platform — UnicornOS is the AI engine that grows your audience and maximizes your income.
             </p>
 
             {/* CTAs */}
@@ -211,7 +211,7 @@ export default function HomePage() {
         {/* ── MARQUEE ── */}
         <div className="border-y border-[rgba(0,200,255,0.09)] bg-[rgba(0,200,255,0.02)] py-4 overflow-hidden">
           <div className="marquee-track gap-10">
-            {["Content Creators","YouTubers","Podcasters","TikTokers","Instagrammers","Twitch Streamers","Newsletter Writers","Course Creators","Brand Builders","Freelancers","Agencies","Music Artists","Content Creators","YouTubers","Podcasters","TikTokers","Instagrammers","Twitch Streamers","Newsletter Writers","Course Creators","Brand Builders","Freelancers","Agencies","Music Artists"].map((t, i) => (
+            {["OnlyFans Creators","YouTubers","Podcasters","TikTokers","Instagram Models","Twitch Streamers","Adult Creators","Course Creators","Brand Builders","Music Artists","Fitness Models","Agencies","OnlyFans Creators","YouTubers","Podcasters","TikTokers","Instagram Models","Twitch Streamers","Adult Creators","Course Creators","Brand Builders","Music Artists","Fitness Models","Agencies"].map((t, i) => (
               <span key={i} className="shrink-0 flex items-center gap-4 text-xs font-mono tracking-widest text-white/30 uppercase whitespace-nowrap">
                 <span className="text-[#00d4ff]/35 text-[8px]">&#9670;</span> {t}
               </span>
@@ -229,17 +229,17 @@ export default function HomePage() {
             <div className="mb-20 text-center">
               <p className="text-[11px] font-mono tracking-[0.35em] text-[#00d4ff] uppercase mb-5">Core Modules</p>
               <h2 className="font-black tracking-tight text-white mb-5" style={{ fontSize: "clamp(2rem,5vw,3.5rem)" }}>
-                Built for the <span className="text-gradient">Creator Economy</span>
+                Built for <span className="text-gradient">Every Creator</span>
               </h2>
-              <p className="max-w-lg mx-auto text-white/40 leading-relaxed">Every tool you need, unified under one intelligence operating system.</p>
+              <p className="max-w-lg mx-auto text-white/40 leading-relaxed">Every platform. Every niche. Every creator type. One AI-powered OS to rule them all.</p>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {[
-                { icon: "&#9889;", title: "Content Engine",   tag: "GENERATE", desc: "Infinite ideas on demand, tailored to your niche. Never run dry.",                 c: "#00d4ff", stat: "10K ideas/mo" },
-                { icon: "&#128197;", title: "Smart Planner",    tag: "SCHEDULE", desc: "Your calendar, fully automated. AI schedules at peak engagement times.",      c: "#34d399", stat: "50+ platforms" },
-                { icon: "&#128176;", title: "Monetization AI",  tag: "REVENUE",  desc: "Turn audience into income. AI finds your best revenue paths instantly.",    c: "#fbbf24", stat: "$18M generated" },
-                { icon: "&#128202;", title: "Growth Analytics", tag: "ANALYZE",  desc: "See what is working in real-time. Data-driven decisions, every post.",     c: "#a78bfa", stat: "99% accuracy" },
+                { icon: "&#9889;", title: "Content Engine",   tag: "GENERATE", desc: "Unlimited content ideas for every platform — YouTube, TikTok, OnlyFans, Instagram. Never run dry again.",                 c: "#00d4ff", stat: "10K ideas/mo" },
+                { icon: "&#128197;", title: "Smart Planner",    tag: "SCHEDULE", desc: "Schedule across all your platforms at once. AI posts at peak engagement times on every channel.",      c: "#34d399", stat: "50+ platforms" },
+                { icon: "&#128176;", title: "Monetization AI",  tag: "REVENUE",  desc: "Fan subscriptions, brand deals, tips, PPV — AI reveals your highest-earning opportunities across every platform.",    c: "#fbbf24", stat: "$18M generated" },
+                { icon: "&#128202;", title: "Growth Analytics", tag: "ANALYZE",  desc: "Track subscribers, revenue, and engagement across all platforms in one dashboard. Know exactly what earns.",     c: "#a78bfa", stat: "99% accuracy" },
               ].map(({ icon, title, tag, desc, c, stat }) => (
                 <TiltCard key={title}
                   style={{ borderColor: c + "22" }}
@@ -268,7 +268,7 @@ export default function HomePage() {
               {[
                 { to: 42000,   suf: "+",  label: "Active Creators"    },
                 { to: 2400000, suf: "+",  label: "Posts Scheduled"    },
-                { to: 18,      suf: "M+", label: "Revenue Generated"  },
+                { to: 18, suf: "M+", label: "Creator Revenue" },
                 { to: 99,      suf: ".9%",label: "Platform Uptime"    },
               ].map(({ to, suf, label }) => (
                 <div key={label}>
@@ -359,7 +359,7 @@ export default function HomePage() {
               <span className="text-gradient">Waiting for You</span>
             </h2>
             <p className="mx-auto mb-14 max-w-md text-white/40 leading-relaxed text-lg">
-              42,000+ creators are already using UnicornOS to grow faster. Join them today.
+              42,000+ creators — OnlyFans models, YouTubers, influencers, podcasters — are scaling faster with UnicornOS. Your turn.
             </p>
             <Button asChild size="lg" className="group bg-[#00d4ff] hover:bg-[#00bde8] text-[#04040f] font-black text-lg rounded-full px-14 h-16 shadow-[0_0_55px_rgba(0,212,255,0.55)] hover:shadow-[0_0_90px_rgba(0,212,255,0.78)] transition-all hover:scale-105">
               <Link href="/auth/sign-up">
