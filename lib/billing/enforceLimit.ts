@@ -1,23 +1,30 @@
-import { getUsage, incrementUsage } from "@/lib/redis"
-import { TIER_LIMITS } from "@/lib/billing/tiers"
+import { TIER_LIMITS } from "@/lib/types"
+import { getAIGenerationCount, trackAIGeneration } from "@/lib/redis"
 
-export async function enforceAICap(
-  userId: string,
-  tier: keyof typeof TIER_LIMITS
-) {
-  const limit = TIER_LIMITS[tier].aiGenerationsPerMonth
+export async function enforceLimit(userId: string, tier: string) {
+  const limits = TIER_LIMITS[tier || "free"]
 
-  if (limit === -1) {
+  // unlimited tier
+  if (limits.aiGenerationsPerMonth === -1) {
+    await trackAIGeneration(userId)
     return { allowed: true }
   }
 
-  const usage = await getUsage(userId)
+  const used = await getAIGenerationCount(userId)
+  const remaining = limits.aiGenerationsPerMonth - used
 
-  if (usage >= limit) {
-    return { allowed: false, usage, limit }
+  if (remaining <= 0) {
+    return {
+      allowed: false,
+      error: "AI generation limit reached. Upgrade required.",
+    }
   }
 
-  await incrementUsage(userId)
+  // track usage only if allowed
+  await trackAIGeneration(userId)
 
-  return { allowed: true, usage: usage + 1, limit }
+  return {
+    allowed: true,
+    remaining: remaining - 1,
+  }
 }
