@@ -18,4 +18,13 @@ export async function POST(req: Request) {
   const result = await scoreIdea(idea);
 
   return Response.json(result);
+
+export function generateShareText(score: number) {
+  return `I just tested my idea on Unicorn OS.
+
+🔥 Viral Score: ${score}/100
+
+Think it will blow up? 👇
+(unicorn-os.com)`;
+}
 }
