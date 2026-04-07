@@ -125,24 +125,24 @@ export default function HomePage() {
 
             
             {/* ── HERO CINEMATIC LOGO EMBLEM ── */}
-            <div className="relative flex flex-col items-center mb-14" style={{ height: "520px" }}>
+            <div className="relative flex flex-col items-center" style={{ paddingTop:"60px", paddingBottom:"40px", marginBottom:"2rem" }}>
 
-              {/* Outer slow orbit ring */}
-              <div className="logo-orbit-b absolute rounded-full border border-[rgba(0,200,255,0.06)]" style={{ width:"560px", height:"560px", top:"-30px", left:"50%", transform:"translateX(-50%)" }} />
+              {/* Outer slow orbit ring — true-centered on logo */}
+              <div className="logo-orbit-b absolute rounded-full border border-[rgba(0,200,255,0.08)]" style={{ width:"640px", height:"640px", top:"50%", left:"50%", transform:"translate(-50%,-50%)" }} />
 
-              {/* Inner faster orbit ring with dots */}
-              <div className="logo-orbit-a absolute rounded-full border border-[rgba(0,200,255,0.12)]" style={{ width:"405px", height:"405px", top:"28px", left:"50%", transform:"translateX(-50%)" }}>
-                <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-[#00d4ff] shadow-[0_0_8px_#00d4ff]"/>
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-[#c084fc] shadow-[0_0_6px_#c084fc]"/>
-                <span className="absolute top-1/2 -left-1 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-[#fbbf24] shadow-[0_0_6px_#fbbf24]"/>
+              {/* Inner faster orbit ring with dots — true-centered */}
+              <div className="logo-orbit-a absolute rounded-full border border-[rgba(0,200,255,0.16)]" style={{ width:"460px", height:"460px", top:"50%", left:"50%", transform:"translate(-50%,-50%)" }}>
+                <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-3 w-3 rounded-full bg-[#00d4ff] shadow-[0_0_14px_#00d4ff]"/>
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-[#c084fc] shadow-[0_0_10px_#c084fc]"/>
+                <span className="absolute top-1/2 -left-1 -translate-y-1/2 h-2 w-2 rounded-full bg-[#fbbf24] shadow-[0_0_10px_#fbbf24]"/>
               </div>
 
-              {/* Nebula halo behind logo */}
-              <div className="absolute rounded-full" style={{ width:"390px", height:"390px", top:"28px", left:"50%", transform:"translateX(-50%)", background:"radial-gradient(circle, rgba(124,58,237,0.25) 0%, rgba(0,212,255,0.12) 50%, transparent 70%)" }} />
+              {/* Cinematic glow bloom behind logo */}
+              <div className="absolute pointer-events-none" style={{ width:"560px", height:"400px", top:"50%", left:"50%", transform:"translate(-50%,-50%)", background:"radial-gradient(ellipse, rgba(124,58,237,0.35) 0%, rgba(0,212,255,0.18) 45%, transparent 70%)", filter:"blur(40px)" }} />
 
-              {/* The 3D Logo */}
-              <div className="relative z-10" style={{ marginTop:"28px" }}>
-                <UnicornOSLogo size={200} iconOnly={true} />
+              {/* The Cinematic Logo */}
+              <div className="relative z-10 unicorn-float" style={{ filter:"drop-shadow(0 0 70px rgba(0,212,255,0.55)) drop-shadow(0 25px 55px rgba(124,58,237,0.45))" }}>
+                <UnicornOSLogo size={240} iconOnly={true} />
               </div>
 
             </div>
