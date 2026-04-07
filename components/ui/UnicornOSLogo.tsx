@@ -2,169 +2,137 @@
 
 import React, { useId } from "react"
 
-interface UnicornOSLogoProps {
-  size?: number
-  className?: string
-  iconOnly?: boolean
-}
+interface UnicornOSLogoProps { size?: number; className?: string; iconOnly?: boolean }
 
-export default function UnicornOSLogo({ size = 48, className = "", iconOnly = false }: UnicornOSLogoProps) {
-  const u = useId().replace(/:/g, "_")
-  const bg   = "bg_" + u, hg   = "hg_" + u, spec = "sp_" + u
-  const halo = "hl_" + u, rimG = "rg_" + u, mg   = "mg_" + u
-  const gf   = "gf_" + u, hf   = "hf_" + u, ef   = "ef_" + u
-  const ts   = Math.round(size * 0.52)
-  const ss   = Math.max(7, Math.round(size * 0.148))
+export default function UnicornOSLogo({ size=48, className="", iconOnly=false }: UnicornOSLogoProps) {
+  const u=useId().replace(/:/g,"_")
+  const lg="lg_"+u, hg="hg_"+u, sd="sd_"+u, hi="hi_"+u
+  const hf="hf_"+u, gf="gf_"+u, ef="ef_"+u, cp="cp_"+u
+  const ts=Math.round(size*0.52), ss=Math.max(7,Math.round(size*0.148))
 
-  const svgEl = (
-    <svg width={size} height={Math.round(size * 1.22)} viewBox="0 0 105 128"
+  const svgEl=(
+    <svg width={size} height={Math.round(size*1.32)} viewBox="0 0 120 158"
       fill="none" xmlns="http://www.w3.org/2000/svg"
-      className="unicorn-float" style={{ overflow: "visible" }}>
+      className="unicorn-float" style={{overflow:"visible"}}>
       <defs>
-        <linearGradient id={bg} x1="10%" y1="0%" x2="95%" y2="100%">
-          <stop offset="0%"   stopColor="#b2f5ea" />
-          <stop offset="25%"  stopColor="#67e8f9" />
-          <stop offset="60%"  stopColor="#818cf8" />
-          <stop offset="100%" stopColor="#3730a3" />
+        {/* Main 3-D lighting gradient: near-white top-left → near-black bottom-right */}
+        <linearGradient id={lg} x1="8%" y1="4%" x2="92%" y2="96%">
+          <stop offset="0%"   stopColor="#cffafe"/>
+          <stop offset="22%"  stopColor="#67e8f9"/>
+          <stop offset="50%"  stopColor="#3b82f6"/>
+          <stop offset="78%"  stopColor="#1e1b4b"/>
+          <stop offset="100%" stopColor="#080616"/>
         </linearGradient>
+        {/* Horn gradient: gold tip → cyan → indigo */}
         <linearGradient id={hg} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#fde68a" />
-          <stop offset="35%"  stopColor="#00d4ff" />
-          <stop offset="100%" stopColor="#818cf8" />
+          <stop offset="0%"   stopColor="#fde68a"/>
+          <stop offset="40%"  stopColor="#00d4ff"/>
+          <stop offset="100%" stopColor="#818cf8"/>
         </linearGradient>
-        <linearGradient id={mg} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%"   stopColor="#00d4ff" />
-          <stop offset="100%" stopColor="#c084fc" />
+        {/* Shadow overlay gradient */}
+        <linearGradient id={sd} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stopColor="#080616" stopOpacity="0"/>
+          <stop offset="100%" stopColor="#080616" stopOpacity="0.72"/>
         </linearGradient>
-        <linearGradient id={rimG} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#fbbf24" stopOpacity="0" />
-          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.55" />
-        </linearGradient>
-        <radialGradient id={spec} cx="30%" cy="22%" r="40%">
-          <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.7" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        {/* Highlight overlay */}
+        <radialGradient id={hi} cx="28%" cy="20%" r="38%">
+          <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.55"/>
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
         </radialGradient>
-        <radialGradient id={halo} cx="52%" cy="55%" r="50%">
-          <stop offset="0%"   stopColor="#4c1d95" stopOpacity="0.25" />
-          <stop offset="50%"  stopColor="#00d4ff" stopOpacity="0.09" />
-          <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-        </radialGradient>
+        {/* Clip path — horse head + neck silhouette facing LEFT */}
+        <clipPath id={cp}>
+          <path d="M58,20 C66,14 74,11 80,12 C88,15 98,22 104,30 C110,40 112,54 110,68 C108,82 103,98 96,114 C90,126 82,136 70,142 C60,146 50,142 42,134 C34,124 28,110 22,96 C16,84 10,78 12,78 C12,70 14,64 18,60 C22,54 28,48 34,44 C40,38 46,30 54,24 Z" />
+        </clipPath>
+        {/* Filters */}
+        <filter id={hf} x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b1"/>
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b2"/>
+          <feMerge><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
         <filter id={gf} x="-15%" y="-15%" width="130%" height="130%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b" />
-          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <filter id={hf} x="-90%" y="-90%" width="280%" height="280%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b1" />
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b2" />
-          <feMerge><feMergeNode in="b1" /><feMergeNode in="b2" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-        <filter id={ef} x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b" />
-          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        <filter id={ef} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
-      {/* ── BACKGROUND HALO ── */}
-      <ellipse cx="52" cy="68" rx="54" ry="52" fill={"url(#"+halo+")"} className="halo-breathe" />
 
-      {/* ── DEPTH SHADOW (3-D extrude) ── */}
-      <path d="M52,18 L58,14 L70,10 L82,20 L86,42 L82,68 L72,85 L55,92 L40,92 L24,86 L16,76 L18,64 L28,54 L36,42 L44,32 L52,22 Z"
-        fill="#0c0a1e" opacity="0.75" transform="translate(4,5)" />
+      {/* AMBIENT HALO */}
+      <ellipse cx="60" cy="90" rx="54" ry="52" fill="rgba(76,29,149,0.2)" className="halo-breathe"/>
 
-      {/* ── CRYSTAL PLANES — angular geometric horse head ── */}
-      {/* P1 — Crown (top of skull, maximum brightness — full overhead light) */}
-      <polygon points="58,14 70,10 82,20 64,26 52,18" fill="#b2f5ea" opacity="0.95" />
+      {/* DEPTH SHADOW (3-D extrude) */}
+      <path d="M58,20 C66,14 74,11 80,12 C88,15 98,22 104,30 C110,40 112,54 110,68 C108,82 103,98 96,114 C90,126 82,136 70,142 C60,146 50,142 42,134 C34,124 28,110 22,96 C16,84 10,78 12,78 C12,70 14,64 18,60 C22,54 28,48 34,44 C40,38 46,30 54,24 Z"
+        fill="#06040e" opacity="0.82" transform="translate(5,6)" filter={"url(#"+gf+")"}/>
 
-      {/* P2 — Forehead / brow (bright, facing viewer + light) */}
-      <polygon points="52,18 64,26 54,38 44,32" fill="#67e8f9" opacity="0.88" />
+      {/* MAIN HEAD — filled with 3-D lighting gradient */}
+      <path d="M58,20 C66,14 74,11 80,12 C88,15 98,22 104,30 C110,40 112,54 110,68 C108,82 103,98 96,114 C90,126 82,136 70,142 C60,146 50,142 42,134 C34,124 28,110 22,96 C16,84 10,78 12,78 C12,70 14,64 18,60 C22,54 28,48 34,44 C40,38 46,30 54,24 Z"
+        fill={"url(#"+lg+")"}/>
 
-      {/* P3 — Upper cheek / back skull (catches some light) */}
-      <polygon points="64,26 82,20 86,42 70,46 54,38" fill="#818cf8" opacity="0.85" />
+      {/* SHADOW OVERLAY — darkens the back-right (shadow side) */}
+      <path d="M58,20 C66,14 74,11 80,12 C88,15 98,22 104,30 C110,40 112,54 110,68 C108,82 103,98 96,114 C90,126 82,136 70,142 C60,146 52,142 48,130 L62,90 Z"
+        fill={"url(#"+sd+")"} opacity="0.65" clipPath={"url(#"+cp+")"}/>
 
-      {/* P4 — Face center (medium) */}
-      <polygon points="44,32 54,38 48,55 36,42" fill="#7c3aed" opacity="0.82" />
+      {/* SPECULAR HIGHLIGHT — bright spot on forehead (key light) */}
+      <path d="M58,20 C66,14 74,11 80,12 C78,26 72,38 62,46 C56,36 54,28 58,20 Z"
+        fill={"url(#"+hi+")"}/>
 
-      {/* P5 — Rear lower cheek (medium-dark, angled away) */}
-      <polygon points="70,46 86,42 82,68 68,60 54,38" fill="#5b21b6" opacity="0.90" />
+      {/* CRYSTAL FACET LINES — the key lines that make it look like cut crystal */}
+      {/* Primary ridge: poll to mid-face */}
+      <line x1="80" y1="12" x2="60" y2="66" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/>
+      {/* Secondary: forehead to mid-face */}
+      <line x1="58" y1="20" x2="60" y2="66" stroke="rgba(255,255,255,0.5)"  strokeWidth="1.0"/>
+      {/* Cheek line: mid-face to jaw */}
+      <line x1="60" y1="66" x2="96" y2="114" stroke="rgba(255,255,255,0.3)" strokeWidth="0.9"/>
+      {/* Lower face: mid to chin */}
+      <line x1="60" y1="66" x2="34" y2="118" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8"/>
+      {/* Brow: poll across face */}
+      <line x1="80" y1="12" x2="42" y2="40" stroke="rgba(207,250,254,0.45)" strokeWidth="0.8"/>
+      {/* Rim light on back skull edge */}
+      <path d="M80,12 C88,15 98,22 104,30 C110,40 112,54 110,68"
+        stroke="rgba(251,191,36,0.5)" strokeWidth="2" fill="none" strokeLinecap="round"/>
 
-      {/* P6 — Lower face / jaw back (dark) */}
-      <polygon points="68,60 82,68 72,85 58,70" fill="#4c1d95" opacity="0.95" />
+      {/* EAR */}
+      <polygon points="86,16 92,2 100,20" fill="#3b82f6" opacity="0.92"/>
+      <polygon points="87,16 92,6 98,19" fill="#cffafe" opacity="0.45"/>
+      <line x1="86" y1="16" x2="92" y2="2" stroke="rgba(207,250,254,0.7)" strokeWidth="0.9"/>
 
-      {/* P7 — Face lower center (medium-dark) */}
-      <polygon points="48,55 54,38 68,60 58,70 50,72" fill="#6d28d9" opacity="0.85" />
+      {/* HORN — long, dominant, gold-to-cyan, glowing */}
+      <polygon points="50,26 60,20 32,-12 44,24" fill={"url(#"+hg+")"} filter={"url(#"+hf+")"} className="horn-glow"/>
+      <line x1="49" y1="25" x2="36" y2="1"   stroke="rgba(255,255,255,0.8)" strokeWidth="1.3"/>
+      <line x1="45" y1="18" x2="34" y2="-4"  stroke="rgba(255,255,255,0.5)" strokeWidth="0.9"/>
+      <line x1="40" y1="10" x2="33" y2="-8"  stroke="rgba(255,255,255,0.3)" strokeWidth="0.6"/>
+      <circle cx="32" cy="-12" r="6"   fill="#fde68a" filter={"url(#"+hf+")"} opacity="0.98"/>
+      <circle cx="32" cy="-12" r="3.5" fill="#fffbeb" opacity="1"/>
+      <circle cx="32" cy="-12" r="1.5" fill="white"  opacity="1"/>
 
-      {/* P8 — Muzzle / front face (medium, facing viewer) */}
-      <polygon points="36,42 28,54 18,64 16,76 24,86 40,92 55,92 50,72 58,70 48,55" fill="#7c3aed" opacity="0.78" />
+      {/* MANE — 5 vivid strands from behind poll, sweeping right-downward */}
+      <path d="M98,22 Q116,36 118,60 Q120,82 112,102 Q104,118 94,126" stroke="#00d4ff" strokeWidth="5.5" strokeLinecap="round" fill="none" opacity="0.9"/>
+      <path d="M102,14 Q122,24 126,50 Q130,72 120,94 Q112,110 98,120" stroke="#c084fc" strokeWidth="4"   strokeLinecap="round" fill="none" opacity="0.78"/>
+      <path d="M96,30 Q112,42 114,64 Q116,84 106,102 Q100,112 92,118" stroke="#f472b6" strokeWidth="3.2" strokeLinecap="round" fill="none" opacity="0.68"/>
+      <path d="M106,8  Q128,16 132,42 Q136,64 124,86 Q116,100 102,110" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.55"/>
+      <path d="M94,38  Q108,50 110,70 Q112,88 102,104 Q96,112 90,116" stroke="#34d399" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.45"/>
 
-      {/* P9 — Chin underside (darkest, facing down) */}
-      <polygon points="55,92 72,85 58,70 50,72" fill="#312e81" opacity="0.95" />
+      {/* EYE */}
+      <ellipse cx="72" cy="52" rx="9" ry="10" fill="#080616" filter={"url(#"+ef+")"}/>
+      <ellipse cx="72" cy="53" rx="6.5" ry="7"  fill="#1e1b4b"/>
+      <ellipse cx="72" cy="53" rx="4.5" ry="5"  fill="#4338ca"/>
+      <ellipse cx="72" cy="54" rx="2.5" ry="3"  fill="#080616"/>
+      <circle cx="76" cy="48" r="2.8" fill="white"   opacity="0.98"/>
+      <circle cx="75" cy="48" r="1.2" fill="#67e8f9" opacity="0.9"/>
+      <circle cx="69" cy="57" r="0.9" fill="rgba(99,102,241,0.7)"/>
+      <ellipse cx="72" cy="53" rx="11" ry="12" fill="none" stroke="rgba(0,212,255,0.2)" strokeWidth="1.3"/>
 
-      {/* ── SPECULAR HIGHLIGHT (top-left light) ── */}
-      <path d="M52,18 L58,14 L70,10 L82,20 L64,26 L54,38 L44,32 Z" fill={"url(#"+spec+")"} />
+      {/* NOSTRIL */}
+      <ellipse cx="18" cy="82" rx="3.5" ry="2" fill="rgba(0,0,0,0.4)" transform="rotate(-20,18,82)"/>
 
-      {/* ── RIM LIGHT (warm gold along skull back edge) ── */}
-      <path d="M58,14 L70,10 L82,20 L86,42 L82,68" stroke={"url(#"+rimG+")"} strokeWidth="2" fill="none" opacity="0.6" />
-
-      {/* ── CRYSTAL EDGE HIGHLIGHTS (facet lines) ── */}
-      <line x1="58" y1="14" x2="64" y2="26" stroke="rgba(255,255,255,0.5)"  strokeWidth="0.9" />
-      <line x1="70" y1="10" x2="64" y2="26" stroke="rgba(255,255,255,0.4)"  strokeWidth="0.8" />
-      <line x1="64" y1="26" x2="54" y2="38" stroke="rgba(255,255,255,0.35)" strokeWidth="0.7" />
-      <line x1="64" y1="26" x2="70" y2="46" stroke="rgba(255,255,255,0.2)"  strokeWidth="0.6" />
-      <line x1="54" y1="38" x2="48" y2="55" stroke="rgba(255,255,255,0.25)" strokeWidth="0.6" />
-      <line x1="54" y1="38" x2="68" y2="60" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
-      <line x1="48" y1="55" x2="58" y2="70" stroke="rgba(255,255,255,0.18)" strokeWidth="0.5" />
-      {/* ── EAR (sharp angular) ── */}
-      <polygon points="72,16 76,2 84,20" fill="#818cf8" opacity="0.92" stroke="rgba(165,243,252,0.4)" strokeWidth="1" />
-      <polygon points="73,16 76,6 82,19" fill="#e0f2fe" opacity="0.55" />
-
-      {/* ── HORN (long, dramatic, glowing) ── */}
-      {/* Horn body */}
-      <polygon points="48,24 56,20 30,-8 40,22" fill={"url(#"+hg+")"} filter={"url(#"+hf+")"} className="horn-glow" />
-      {/* Twist detail lines */}
-      <line x1="46" y1="23" x2="35" y2="4"  stroke="rgba(255,255,255,0.65)" strokeWidth="1.0" />
-      <line x1="42" y1="18" x2="33" y2="1"  stroke="rgba(255,255,255,0.42)" strokeWidth="0.7" />
-      <line x1="38" y1="12" x2="31" y2="-3" stroke="rgba(255,255,255,0.25)" strokeWidth="0.5" />
-      {/* Horn tip supernova */}
-      <circle cx="30" cy="-8" r="5"   fill="#fbbf24" filter={"url(#"+hf+")"} opacity="0.95" />
-      <circle cx="30" cy="-8" r="2.5" fill="#fde68a" opacity="0.98" />
-      <circle cx="30" cy="-8" r="1"   fill="white"  opacity="1" />
-
-      {/* ── MANE — 5 rainbow strands from back of skull ── */}
-      <path d="M82,22 Q98,32 102,52 Q106,70 98,86 Q92,96 82,101"
-        stroke="#00d4ff" strokeWidth="4.5" strokeLinecap="round" fill="none" opacity="0.88" />
-      <path d="M84,14 Q103,22 108,44 Q112,62 104,80 Q97,92 84,98"
-        stroke="#c084fc" strokeWidth="3.5" strokeLinecap="round" fill="none" opacity="0.78" />
-      <path d="M80,30 Q95,38 99,56 Q102,74 93,87 Q88,94 80,98"
-        stroke="#f472b6" strokeWidth="2.8" strokeLinecap="round" fill="none" opacity="0.68" />
-      <path d="M86,8  Q106,14 112,36 Q116,56 107,74 Q100,86 88,93"
-        stroke="#fbbf24" strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.58" />
-      <path d="M78,38 Q90,44 94,60 Q96,74 88,85 Q83,91 78,95"
-        stroke="#34d399" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.50" />
-      {/* ── EYE — intense, detailed ── */}
-      <ellipse cx="67" cy="48" rx="9" ry="10" fill="rgba(4,4,20,0.95)" filter={"url(#"+ef+")"} />
-      <ellipse cx="67" cy="49" rx="6.5" ry="7"  fill="#1e1b4b" />
-      <ellipse cx="67" cy="49" rx="4.5" ry="5"  fill="#4c1d95" />
-      <ellipse cx="67" cy="49" rx="2.8" ry="3.2" fill="#7c3aed" />
-      <ellipse cx="67" cy="50" rx="1.5" ry="1.8" fill="#0a0a1f" />
-      <circle cx="70" cy="45" r="2.5" fill="white"  opacity="0.98" />
-      <circle cx="69" cy="45" r="1"   fill="#00d4ff" opacity="0.85" />
-      <circle cx="64" cy="53" r="0.9" fill="rgba(0,212,255,0.65)" />
-      <ellipse cx="67" cy="49" rx="10" ry="11" fill="none" stroke="rgba(0,212,255,0.2)" strokeWidth="1.2" />
-
-      {/* ── NOSTRIL (horse detail) ── */}
-      <ellipse cx="22" cy="78" rx="3.5" ry="2" fill="rgba(0,0,0,0.35)" transform="rotate(-15,22,78)" />
-
-      {/* ── SPARKLE STARS ── */}
-      <g className="sp-a" style={{ transformOrigin: "92px 12px" }}>
-        <path d="M92 7 L93.5 11 L98 11 L94.5 13.5 L96 18 L92 15.5 L88 18 L89.5 13.5 L86 11 L90.5 11Z" fill="#fbbf24" />
-      </g>
-      <g className="sp-b" style={{ transformOrigin: "10px 82px" }}>
-        <path d="M10 77 L11.2 80.5 L15 80.5 L12.5 82.5 L13.5 86 L10 84 L6.5 86 L7.5 82.5 L5 80.5 L8.8 80.5Z" fill="#00d4ff" />
-      </g>
-      <g className="sp-c" style={{ transformOrigin: "92px 102px" }}>
-        <path d="M92 98 L93 100.5 L96 100.5 L94 102 L95 105 L92 103 L89 105 L90 102 L88 100.5 L91 100.5Z" fill="#c084fc" />
-      </g>
-      <circle cx="14" cy="32" r="2"   fill="#34d399" className="sp-a" style={{ transformOrigin: "14px 32px" }} opacity="0.85" />
-      <circle cx="8"  cy="58" r="1.3" fill="#fbbf24" className="sp-c" style={{ transformOrigin: "8px 58px" }} opacity="0.65" />
+      {/* SPARKLES */}
+      <g className="sp-a" style={{transformOrigin:"10px 36px"}}><path d="M10 30 L11.5 34 L16 34 L12.5 36.5 L14 41 L10 38 L6 41 L7.5 36.5 L4 34 L8.5 34Z" fill="#fbbf24"/></g>
+      <g className="sp-b" style={{transformOrigin:"110px 136px"}}><path d="M110 131 L111 134 L114 134 L112 136 L113 139 L110 137 L107 139 L108 136 L106 134 L109 134Z" fill="#00d4ff"/></g>
+      <g className="sp-c" style={{transformOrigin:"8px 108px"}}><path d="M8 103 L9 106 L12 106 L10 108 L11 111 L8 109 L5 111 L6 108 L4 106 L7 106Z" fill="#c084fc"/></g>
+      <circle cx="114" cy="58" r="2"   fill="#34d399" className="sp-b" style={{transformOrigin:"114px 58px"}} opacity="0.8"/>
+      <circle cx="6"   cy="70" r="1.4" fill="#f472b6" className="sp-a" style={{transformOrigin:"6px 70px"}} opacity="0.7"/>
 
     </svg>
   )
@@ -172,13 +140,13 @@ export default function UnicornOSLogo({ size = 48, className = "", iconOnly = fa
   if (iconOnly) return <div className={className}>{svgEl}</div>
 
   return (
-    <div className={"flex items-center gap-3 " + className} style={{ lineHeight:1 }}>
+    <div className={"flex items-center gap-3 "+className} style={{lineHeight:1}}>
       {svgEl}
-      <div style={{ lineHeight:1 }}>
-        <div style={{ fontSize:ts, fontWeight:900, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#b2f5ea,#818cf8,#c084fc)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>
+      <div style={{lineHeight:1}}>
+        <div style={{fontSize:ts,fontWeight:900,letterSpacing:"-0.03em",background:"linear-gradient(135deg,#cffafe,#818cf8,#c084fc)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>
           UnicornOS
         </div>
-        <div style={{ fontSize:ss, fontWeight:500, letterSpacing:"0.18em", color:"rgba(255,255,255,0.4)", fontFamily:"monospace", marginTop:2, textTransform:"uppercase" }}>
+        <div style={{fontSize:ss,fontWeight:500,letterSpacing:"0.18em",color:"rgba(255,255,255,0.4)",fontFamily:"monospace",marginTop:2,textTransform:"uppercase"}}>
           THE INTELLIGENCE OPERATING SYSTEM
         </div>
       </div>
