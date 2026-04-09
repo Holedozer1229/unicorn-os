@@ -5,6 +5,8 @@ import Link from "next/link"
 import { ArrowRight, Check, Zap, Crown, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import UnicornOSLogo from "@/components/ui/UnicornOSLogo"
+import SphinxChat from "@/components/sphinx/SphinxChat"
+import PaywallModal from "@/components/sphinx/PaywallModal"
 
 function TiltCard({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -52,6 +54,8 @@ export default function HomePage() {
   const [mouse, setMouse] = useState({ x: -999, y: -999 })
   const [wordIdx, setWordIdx] = useState(0)
   const [wordIn, setWordIn] = useState(true)
+  const [showPaywall, setShowPaywall] = useState(false)
+  const [requestCount, setRequestCount] = useState(0)
 
   useEffect(() => {
     const h = (e: MouseEvent) => setMouse({ x: e.clientX, y: e.clientY })
@@ -355,6 +359,26 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        {/* ── SPHINX ORACLE ── */}
+        <section className="relative py-24 border-t border-[rgba(0,200,255,0.08)]">
+          <div className="container mx-auto px-4">
+            <div className="mb-16 text-center">
+              <p className="text-[11px] font-mono tracking-[0.35em] text-[#00d4ff] uppercase mb-5">Try Free</p>
+              <h2 className="font-black tracking-tight text-white mb-5" style={{ fontSize: "clamp(2rem,5vw,3.5rem)" }}>
+                Chat with <span className="text-gradient">The Sphinx</span>
+              </h2>
+              <p className="max-w-lg mx-auto text-white/40 leading-relaxed">Get instant insights about content creation, building your audience, and scaling your creator business. 5 free questions — no sign-up required.</p>
+            </div>
+
+            <div className="max-w-2xl mx-auto">
+              <SphinxChat
+                onPaywallTrigger={() => setShowPaywall(true)}
+                onRequestCountChange={setRequestCount}
+              />
+            </div>
+          </div>
+        </section>
+
         {/* ── CTA ── */}
         <section className="relative py-36 overflow-hidden">
           {/* Orbiting rings */}
@@ -384,6 +408,9 @@ export default function HomePage() {
         </section>
 
       </main>
+
+      {/* Paywall Modal */}
+      <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-[rgba(0,200,255,0.08)] py-8" style={{ background: "rgba(4,4,15,0.95)" }}>
