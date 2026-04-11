@@ -112,10 +112,15 @@ export async function PATCH(request: Request) {
       .single()
 
     if (error) {
+      console.error("Supabase insert error:", error)
+      if (error.code === "42P01") {
+        // Table doesn't exist
+        throw new Error("Database table 'content_plans' does not exist. Please contact support.")
+      }
       throw error
     }
 
-    return Response.json({ plan })
+    return Response.json({ plan }, { status: 201 })
   } catch (error) {
     console.error("Error updating plan:", error)
     return Response.json({ error: "Failed to update plan" }, { status: 500 })

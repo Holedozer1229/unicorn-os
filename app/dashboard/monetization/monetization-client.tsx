@@ -86,13 +86,15 @@ export function MonetizationClient({
       })
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to generate suggestions")
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.error || `HTTP ${response.status}: Failed to generate suggestions`)
       }
 
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong")
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong"
+      setError(errorMessage)
+      console.error("Monetization generation error:", err)
     } finally {
       setGenerating(false)
     }
@@ -107,12 +109,15 @@ export function MonetizationClient({
       })
 
       if (!response.ok) {
-        throw new Error("Failed to update suggestion")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to update suggestion`)
       }
 
       router.refresh()
     } catch (err) {
-      setError("Failed to update suggestion")
+      const errorMessage = err instanceof Error ? err.message : "Failed to update suggestion"
+      setError(errorMessage)
+      console.error("Suggestion update error:", err)
     }
   }
 

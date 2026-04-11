@@ -108,14 +108,17 @@ export function PlannerClient({
       })
 
       if (!response.ok) {
-        throw new Error("Failed to create plan")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to create plan`)
       }
 
       setDialogOpen(false)
       resetForm()
       router.refresh()
     } catch (err) {
-      setError("Failed to create content plan")
+      const errorMessage = err instanceof Error ? err.message : "Failed to create content plan"
+      setError(errorMessage)
+      console.error("Plan creation error:", err)
     } finally {
       setCreating(false)
     }
@@ -130,12 +133,15 @@ export function PlannerClient({
       })
 
       if (!response.ok) {
-        throw new Error("Failed to update plan")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to update plan`)
       }
 
       router.refresh()
     } catch (err) {
-      setError("Failed to update plan")
+      const errorMessage = err instanceof Error ? err.message : "Failed to update plan"
+      setError(errorMessage)
+      console.error("Plan update error:", err)
     }
   }
 
@@ -146,12 +152,15 @@ export function PlannerClient({
       })
 
       if (!response.ok) {
-        throw new Error("Failed to delete plan")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to delete plan`)
       }
 
       router.refresh()
     } catch (err) {
-      setError("Failed to delete plan")
+      const errorMessage = err instanceof Error ? err.message : "Failed to delete plan"
+      setError(errorMessage)
+      console.error("Plan delete error:", err)
     }
   }
 

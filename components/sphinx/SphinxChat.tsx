@@ -55,10 +55,11 @@ export default function SphinxChat({ onPaywallTrigger, onRequestCountChange }: S
       return;
     }
 
+    const messageContent = input; // Store message before clearing
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      content: messageContent,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -71,10 +72,16 @@ export default function SphinxChat({ onPaywallTrigger, onRequestCountChange }: S
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: input,
+          message: messageContent,
           history: messages,
         }),
       });
+
+      // Check for errors
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
 
       if (!response.body) throw new Error("No response body");
 
